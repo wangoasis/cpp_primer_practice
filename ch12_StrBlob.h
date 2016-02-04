@@ -1,3 +1,6 @@
+#ifndef CH12_StrBlob_H
+#define CH12_StrBlob_H
+
 #include <vector>
 #include <string>
 #include <memory>
@@ -5,8 +8,13 @@
 #include <exception>
 using std::vector; using std::string; using std::make_shared; using std::initializer_list;
 
+// class declaration
+class StrBlobPtr;
+
 class StrBlob {
     
+    friend class StrBlobPtr;
+
     public:
     typedef vector<string>::size_type size_type;
 
@@ -52,6 +60,11 @@ class StrBlob {
         return data->back();
     }
 
+    // a safe pointer class
+    StrBlobPtr begin();
+
+    StrBlobPtr end();
+
     private:
     // a shared_ptr to a vector
     std::shared_ptr<vector<string>> data;
@@ -63,3 +76,47 @@ class StrBlob {
     }
 };
 
+class StrBlobPtr {
+    
+    public:
+    // construction method
+    StrBlobPtr() : curr(0) {}
+    StrBlobPtr(StrBlob &a, size_t sz = 0) : wptr(a.data), curr(sz) {}
+
+    // operator *
+    string& deref() const {
+        auto p = check(curr, "deference past end");
+        return (*p)[curr];    
+    }
+
+    // operator ++
+    StrBlobPtr& incr() {
+        check(curr, "increment past end of StrBlobPtr");
+        ++curr;
+        return *this;    
+    }
+
+    // operator !=
+    bool operator != (const StrBlobPtr &rhs) {
+        return curr != rhs.curr;
+    }
+
+    private:
+    // a weak_ptr correponds to the shared_ptr in class StrBlob
+    std::weak_ptr<vector<string>> wptr;
+    // the index in vector
+    std::size_t curr;
+
+    std::shared_ptr<vector<string>> check(std::size_t i, const string& msg) const {
+        auto ret = wptr.lock();
+        if(!ret) 
+            throw std::runtime_error("Unbound StrBlobPtr");
+        
+        if(i >= ret->size()) 
+            throw std::out_of_range(msg);
+
+        return ret;
+    }
+};
+
+#endif
