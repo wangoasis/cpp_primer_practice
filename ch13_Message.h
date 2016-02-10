@@ -10,7 +10,8 @@ using std::set;
 #include <iostream>
 using std::ostream; using std::cout; using std::endl;
 
-class Folder;
+class Folder; // forward declaration
+
 class Message {
     
     friend class Folder;
