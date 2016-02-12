@@ -12,6 +12,7 @@ bool isDivided(const int& n1, const int &n2) {
     
     return (n2%n1==0);   
 }
+
 int main() {
     
     vector<int> vec1{2, 3, 5, 7};  
