@@ -108,6 +108,7 @@ class StrBlobPtr {
     std::size_t curr;
 
     std::shared_ptr<vector<string>> check(std::size_t i, const string& msg) const {
+
         auto ret = wptr.lock();
         if(!ret) 
             throw std::runtime_error("Unbound StrBlobPtr");
